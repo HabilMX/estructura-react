@@ -1,0 +1,11 @@
+{
+  // Las pruebas: otro programa, con lo que solo existe al probar (Vitest, jsdom).
+  // Incluye src/ porque las pruebas importan el código de la app.
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "types": ["vite/client", "@testing-library/jest-dom/vitest"]
+  },
+  "include": ["src"],
+  "exclude": []
+}

@@ -1,0 +1,121 @@
+/* Lo común a todas las pantallas. Solo usa tokens: ningún color se escribe aquí. */
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--tipo-familia);
+  font-size: var(--tipo-base);
+  color: var(--color-texto);
+  background: var(--color-fondo);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.marco__encabezado {
+  padding: var(--espacio-3);
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.marco__navegacion {
+  display: flex;
+  gap: var(--espacio-3);
+}
+
+.marco__contenido,
+.pagina {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: var(--espacio-3);
+}
+
+.pagina__titulo {
+  font-size: var(--tipo-titulo);
+}
+
+.pila {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+.renglon {
+  display: flex;
+  gap: var(--espacio-2);
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+
+.campo__control {
+  padding: var(--espacio-2);
+  font: inherit;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.campo__control[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.campo__error {
+  color: var(--color-error);
+}
+
+.boton {
+  min-height: 2.5rem;
+  padding: var(--espacio-2) var(--espacio-3);
+  font: inherit;
+  color: var(--color-acento-texto);
+  background: var(--color-acento);
+  border: 1px solid var(--color-acento);
+  border-radius: var(--radio);
+  cursor: pointer;
+}
+
+.boton--secundario {
+  color: var(--color-acento);
+  background: var(--color-fondo);
+}
+
+.boton:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.aviso {
+  padding: var(--espacio-3);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.aviso--error {
+  color: var(--color-error);
+  background: var(--color-error-fondo);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th,
+.tabla td {
+  padding: var(--espacio-2);
+  text-align: left;
+  border-bottom: 1px solid var(--color-borde);
+}

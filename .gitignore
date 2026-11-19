@@ -1,0 +1,17 @@
+# Lo que instala npm: se rehace en cada máquina con «npm ci», nunca se sube.
+node_modules/
+
+# Lo que deja «npm run build»: se rehace, nunca se sube.
+dist/
+coverage/
+reporte-suite.json
+
+# Variables de tu máquina. La lista de las que existen está en .env.example.
+.env
+.env.local
+.env.*.local
+
+# Editores y sistema operativo.
+.idea/
+.vscode/
+.DS_Store

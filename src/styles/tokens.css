@@ -1,0 +1,29 @@
+/*
+ * Los design tokens: el único lugar donde se escribe un color, una medida o una tipografía.
+ * Los componentes los usan por su nombre (var(--color-texto)); cambiar uno aquí lo cambia
+ * en toda la app. Los contrastes de texto sobre fondo pasan WCAG AA (4.5:1 o más).
+ */
+:root {
+  --color-fondo: #ffffff;
+  --color-superficie: #f4f6f8;
+  --color-texto: #1b1f24;
+  --color-texto-suave: #4a5260;
+  --color-borde: #c9cfd6;
+  --color-acento: #0b5cad;
+  --color-acento-texto: #ffffff;
+  --color-error: #a4161a;
+  --color-error-fondo: #fdecec;
+  --color-foco: #0b5cad;
+
+  --tipo-familia: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --tipo-base: 1rem;
+  --tipo-titulo: 1.5rem;
+
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 1rem;
+  --espacio-4: 1.5rem;
+
+  --radio: 0.375rem;
+  --ancho-maximo: 40rem;
+}

@@ -1,0 +1,131 @@
+name: Verificar la plantilla
+
+# Se corre en cada cambio, a mano cuando se quiera, y una vez por semana: una
+# versión nueva de Node puede romper la plantilla sin que nadie haya tocado
+# nada, y es mejor enterarse por este rojo que por el primer lector que la
+# clone.
+# ⚠️ En un repositorio público, GitHub apaga solo la corrida programada si el
+# repositorio pasa 60 días sin actividad; hay que volver a encenderla a mano.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 13 * * 1" # lunes 13:17 UTC (7:17 en la Ciudad de México)
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # lts/*: la LTS más reciente. 26.13.0: la que declara "engines" en
+          # package.json (la primera LTS de la línea 26). Si algún día la
+          # plantilla usa algo que esa versión no trae, este rojo avisa que
+          # "engines" ya miente.
+          - { os: ubuntu-latest, node: "lts/*" }
+          - { os: ubuntu-latest, node: "26.13.0" }
+          # macOS: la frontera se corre con el bash que trae el sistema (el
+          # 3.2), que es el que tiene quien clona en una Mac sin Homebrew.
+          - { os: macos-latest, node: "lts/*" }
+    name: Node ${{ matrix.node }} · ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+
+      - name: Versiones
+        run: |
+          node --version
+          npm --version
+
+      # npm ci instala exactamente lo que dice package-lock.json. Si el archivo
+      # falta o no concuerda con package.json, este paso falla en vez de
+      # resolver otras versiones por su cuenta.
+      - name: Dependencias, las de package-lock.json
+        run: npm ci
+
+      # tsc -b revisa los tres programas: la aplicación, las pruebas y
+      # vite.config.ts. Vite no revisa tipos al construir.
+      - name: Tipos
+        run: npm run typecheck
+
+      - name: Lint, sin una sola advertencia
+        run: npm run lint
+
+      - name: Formato
+        run: npm run format
+
+      # El conteo se lee del informe JSON, no del código de salida: un archivo
+      # de pruebas que no logra importar sale como «0 test» y el total baja
+      # sin que nada se ponga rojo.
+      - name: Pruebas (el conteo se lee del informe)
+        shell: bash
+        run: |
+          npx vitest run --reporter=json --outputFile=reporte-suite.json
+          node -e '
+            const r = require("./reporte-suite.json");
+            console.log(`pruebas=${r.numTotalTests} pasaron=${r.numPassedTests} fallaron=${r.numFailedTests} pendientes=${r.numPendingTests}`);
+            if (r.numTotalTests < 1 || r.numFailedTests !== 0 || r.numPendingTests !== 0 || r.numPassedTests !== r.numTotalTests) process.exit(1);
+          '
+
+      # Una prueba fuera de src/test/ no se corre: Vitest solo busca ahí.
+      - name: Ninguna prueba fuera de src/test/
+        shell: bash
+        run: |
+          perdidas="$(find src -name '*.test.*' -not -path 'src/test/*')"
+          if [ -n "$perdidas" ]; then
+            echo "❌ pruebas que nadie corre:"
+            echo "$perdidas"
+            exit 1
+          fi
+
+      # La auditoría de dependencias: un hallazgo alto o crítico pone rojo el CI.
+      - name: Auditoría de dependencias
+        run: npm audit --audit-level=high
+
+      # «npm run build» corre vite build y después el presupuesto
+      # (herramientas/revisar-presupuesto.mjs, con la cifra de presupuesto.json): si lo que
+      # baja toda visita pasa del tope, sale en rojo.
+      - name: Construcción y presupuesto
+        run: npm run build
+
+      # Dos construcciones del mismo commit tienen que dar archivos idénticos: si no, lo que
+      # se probó y lo que se publica dejan de ser lo mismo.
+      - name: Dos construcciones idénticas
+        shell: bash
+        run: |
+          D="$(mktemp -d)"
+          for i in 1 2; do
+            npx vite build --logLevel error --emptyOutDir --outDir "$D/b$i"
+            (cd "$D/b$i" && find . -type f -exec shasum -a 256 {} + | sort -k2) > "$D/b$i.sha"
+          done
+          diff "$D/b1.sha" "$D/b2.sha"
+          echo "✅ $(wc -l < "$D/b1.sha") archivos idénticos en las dos construcciones"
+
+      # La frontera que sabe fallar: tres imports que cruzan una frontera
+      # TIENEN que compilar, construir y ponerse rojos en el lint, cada uno por
+      # su razón. Se llama con bash para no depender de que el archivo
+      # conserve su permiso de ejecución.
+      - name: Frontera (lo que el compilador no ve, el lint sí)
+        if: runner.os == 'Linux'
+        run: bash herramientas/probar-frontera.sh
+
+      # En macOS, con /bin/bash explícito y en UTF-8: ese bash 3.2 lee mal una
+      # variable pegada a una letra con acento o a una comilla «», y un guion
+      # que se corta a la mitad puede salir con 0. Esta fila lo vigila.
+      - name: Frontera con el bash de macOS (/bin/bash 3.2)
+        if: runner.os == 'macOS'
+        env:
+          LANG: en_US.UTF-8
+          LC_ALL: en_US.UTF-8
+        run: |
+          /bin/bash --version | head -n 1
+          /bin/bash herramientas/probar-frontera.sh

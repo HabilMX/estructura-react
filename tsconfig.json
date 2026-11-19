@@ -1,0 +1,11 @@
+{
+  // La raíz no revisa ningún archivo: solo apunta a los tres programas del proyecto.
+  // Por eso el typecheck es «tsc -b» y no «tsc --noEmit» (que aquí saldría en verde
+  // sin haber revisado nada).
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.test.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}

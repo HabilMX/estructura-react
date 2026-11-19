@@ -1,0 +1,10 @@
+# La revisión de material no publicable se corre ANTES de publicar y se queda en
+# el repositorio de trabajo: su lista deletrea nombres internos.
+.publicable-prohibido.txt export-ignore
+verificar-publicable.sh export-ignore
+
+# Los guiones no son el lenguaje que la plantilla enseña.
+herramientas/*.sh linguist-detectable=false
+
+# Los guiones de bash conservan LF aunque alguien clone en Windows.
+*.sh text eol=lf
