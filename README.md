@@ -26,9 +26,9 @@ la línea LTS más reciente; con ella se probó la plantilla.
 - **Linux Mint 22**: no uses `apt install nodejs`, que instala una versión vieja. Instala Node con
   `nvm`, como dice su README, abre otra terminal y pide la línea 26 (`nvm install 26`). La
   [lección 1 del curso de TypeScript](https://www.habil.mx/es/cursos/typescript/01-instalacion/) lo
-  explica paso a paso. ⚠️ Esta plantilla **no se ha probado en Linux**: se midió en macOS. El CI la
-  corre en Linux en cada cambio; si algo falla ahí, el rojo se ve en la pestaña Actions del
-  repositorio.
+  explica paso a paso. Linux Mint **no se ha probado**. Sí la corrió el CI de GitHub en
+  Ubuntu 26.04, con Node 26.13.0 y 26.13.1, en verde; corre en cada cambio, y si algo falla ahí, el
+  rojo se ve en la pestaña Actions del repositorio.
 - **macOS**: lo mismo, con `nvm`. El guion de la frontera funciona con el bash que trae el sistema
   (`/bin/bash`, la versión 3.2).
 - **Windows**: usa WSL; el guion de la frontera pide `bash`.
@@ -385,7 +385,7 @@ una ese día.
 
 | Pieza               | Versión                                                                                                                                                                                                                                                                                  |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Node                | `"engines": ">=26.13.0"`, la primera LTS de la línea 26. Probado con 26.13.1 y npm 11.20.0, en macOS arm64. **En Linux no se ha probado**; el CI está escrito para correrla ahí                                                                                                          |
+| Node                | `"engines": ">=26.13.0"`, la primera LTS de la línea 26. Probado con 26.13.1 y npm 11.20.0, en macOS arm64. En Linux, el CI de GitHub en Ubuntu 26.04 con 26.13.0 y 26.13.1; Linux Mint, sin probar                                                                                      |
 | React               | `react` y `react-dom` 19.3.1, `react-router` 8.5.2                                                                                                                                                                                                                                       |
 | Datos               | `zod` 4.6.7                                                                                                                                                                                                                                                                              |
 | Construcción        | `vite` 8.3.8, `@vitejs/plugin-react` 6.3.0                                                                                                                                                                                                                                               |
